@@ -113,7 +113,7 @@ images_path, annots, images = create_env()
 # read json
 data = []
 
-for annot_fileJSON in tqdm(annots[1]):
+for annot_fileJSON in tqdm(annots):
     with annot_fileJSON.open("r", encoding="utf-8") as jsonReader:
         labels = json.loads(jsonReader.read())
 
@@ -121,11 +121,11 @@ for annot_fileJSON in tqdm(annots[1]):
     if type(image) != np.ndarray:
         continue
 
-    image, mask = create_mask(image, labels)
-    if type(mask) != np.ndarray:
-        continue
+    image, mask = create_little_image(image, labels)
+    dim = (128, 128)
 
-    res = cv2.bitwise_and(image, image, mask=mask)
-    plt.imshow(res)
-    data.append(res.flatten())
+    # resize image
+    image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+
+    data.append(image.flatten())
 df = pd.DataFrame(data)
